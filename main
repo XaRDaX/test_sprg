@@ -1,0 +1,68 @@
+import fluids
+import pint
+import math
+import scipy.optimize as optim
+import DIN_pipe_specs as DIN
+
+
+### Starting sonetto
+u = pint.UnitRegistry()
+
+######## PARAMETERS #########
+
+# Vessel Data
+propeller_to_sparger_distance = 200 *u.mm # Vertical distance from sparger to lower agitator location
+
+
+# CIP Data
+CIP_press_at_sparger = 3 *u.bar # Pressure of CIP/water fluid at the sparger inlet
+CIP_max_flowrate = 30 *u.L/u.min # Maximum flowrate delivered by the CIP pump
+CIP_target_vel = 1.5 *u.m/u.s # target CIP avg velocity for cleaning
+CIP_rho = 997.3*u.kg/u.m**3
+CIP_mu = 0.890*u.centipoise
+CIP_temp = u.Quantity
+CIP_temp = CIP_temp(85, u.degC)
+
+# Gas sparging requirements
+sparge_max_lin_vel = 25 *u.m/u.s # maxiumum gas linear velocity in the liquid medium
+sparge_max_flowrate = 120 *u.L/u.min # STP @ 0°C and 1 bara
+sparge_vessel_head_pressure = 0.15 *u.bar # operational overhead pressure during sparging
+sparge_liquid_height = 2 *u.m # Liquid level above the sparger during normal operations
+sparge_liquid_density = 1.1 *u.kg/u.m**3 # Density of the sparged liquid
+sparge_gas_press = 1 *u.bar # Pressure of the gas at sparger inlet
+sparge_gas_temp = u.Quantity
+sparge_gas_temp = sparge_gas_temp(20, u.degC) # Gas temperture at sparger inlet
+
+
+# Mechanical/geometrical parameters
+Di = 7*u.mm # internal sparger diameter
+Di_hole = 1.5 *u.mm # diameter of a single hole
+wall_thickness = 2 *u.mm # thickness of the sparger pipe
+roughness = 0.8*u.um # pipe rugosity
+
+g = 9.81 *u.m/u.s**2
+
+# Beforehand calculations
+V = CIP_max_flowrate/(Di**2/4*math.pi) # CIP velocity inside sparger
+
+# v2 = v1*(p1/p2)*(T2/T1)
+
+# Gas calculations
+Dp_static = sparge_liquid_density*g*sparge_liquid_height + sparge_vessel_head_pressure
+sparge_flow_normal = sparge_max_flowrate*(1*u.bar)/(1*u.bar+Dp_static)*(273.15*u.degK)/(sparge_gas_temp.to('degK'))
+
+# estimate required holes
+
+print(sparge_flow_normal)
+
+print(Dp_static.to('bar'))
+
+print((60*u.ft/u.s).to('m/s'))
+
+# def errfn(x, target_Re):
+#     x = x*u.m/u.s
+#     return target_Re - fluids.core.Reynolds(x, Di, rho, mu).to_base_units()
+#
+#
+# a = optim.root(errfn, V, args=([15000]))
+
